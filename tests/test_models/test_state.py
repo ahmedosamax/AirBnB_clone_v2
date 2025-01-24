@@ -1,45 +1,23 @@
 #!/usr/bin/python3
-"""
-    test state
-"""
-from models.base_model import BaseModel
+""" """
+import os
+
+from tests.test_models.test_base_model import TestBasemodel
 from models.state import State
-import unittest
 
 
-class test_State(unittest.TestCase):
-    """
-        test for state class
-    """
-    @classmethod
-    def setUpClass(cls):
-        """
-            setup
-        """
-        cls.dummy_state = State()
-        cls.dummy_state.name = "tests"
+class TestState(TestBasemodel):
+    """Represents the tests for the State model."""
+    def __init__(self, *args, **kwargs):
+        """Initializes the test class."""
+        super().__init__(*args, **kwargs)
+        self.name = "State"
+        self.value = State
 
-    @classmethod
-    def tearDownClass(cls):
-        """
-            tear down
-        """
-        del cls.dummy_state
-
-    def test_inheritance(self):
-        """
-            test proper inheritance
-        """
-        self.assertIsInstance(self.dummy_state, BaseModel)
-        self.assertTrue(hasattr(self.dummy_state, "id"))
-        self.assertTrue(hasattr(self.dummy_state, "created_at"))
-        self.assertTrue(hasattr(self.dummy_state, "updated_at"))
-
-    def test_attrs(self):
-        """
-            test attributes
-        """
-        self.assertTrue(hasattr(self.dummy_state, "name"))
-
-if __name__ == "__main__":
-    unittest.main()
+    def test_name3(self):
+        """Tests the type of name."""
+        new = self.value()
+        self.assertEqual(
+            type(new.name),
+            str if os.getenv('HBNB_TYPE_STORAGE') != 'db' else type(None)
+        )

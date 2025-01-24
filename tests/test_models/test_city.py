@@ -1,48 +1,31 @@
 #!/usr/bin/python3
-"""
-    test city
-"""
+""" """
+import os
+
 from models.city import City
-from models.state import State
-from models.base_model import BaseModel
-import unittest
+from tests.test_models.test_base_model import TestBasemodel
 
 
-class test_City(unittest.TestCase):
-    """
-        test for city class
-    """
-    @classmethod
-    def setUpClass(cls):
-        """
-            setup
-        """
-        cls.dummy_city = City()
-        cls.dummy_city.name = "test"
-        cls.dummy_city.state_id = State().id
+class TestCity(TestBasemodel):
+    """Represents the tests for the City model."""
+    def __init__(self, *args, **kwargs):
+        """Initializes the test class."""
+        super().__init__(*args, **kwargs)
+        self.name = "City"
+        self.value = City
 
-    @classmethod
-    def tearDownClass(cls):
-        """
-            tear down
-        """
-        del cls.dummy_city
+    def test_state_id(self):
+        """Tests the type of state_id."""
+        new = self.value()
+        self.assertEqual(
+            type(new.state_id),
+            str if os.getenv('HBNB_TYPE_STORAGE') != 'db' else type(None)
+        )
 
-    def test_inheritance(self):
-        """
-            test proper inheritance
-        """
-        self.assertIsInstance(self.dummy_city, BaseModel)
-        self.assertTrue(hasattr(self.dummy_city, "id"))
-        self.assertTrue(hasattr(self.dummy_city, "created_at"))
-        self.assertTrue(hasattr(self.dummy_city, "updated_at"))
-
-    def test_attrs(self):
-        """
-            test attributes
-        """
-        self.assertTrue(hasattr(self.dummy_city, "name"))
-        self.assertTrue(hasattr(self.dummy_city, "state_id"))
-
-if __name__ == "__main__":
-    unittest.main()
+    def test_name(self):
+        """Tests the type of name."""
+        new = self.value()
+        self.assertEqual(
+            type(new.name),
+            str if os.getenv('HBNB_TYPE_STORAGE') != 'db' else type(None)
+        )

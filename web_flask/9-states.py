@@ -1,32 +1,50 @@
 #!/usr/bin/python3
-"""starts a Flask web application"""
-
+'''A simple Flask web application.
+'''
 from flask import Flask, render_template
-import models
 
-app = Flask("__name__")
+from models import storage
+from models.state import State
+
+
+app = Flask(__name__)
+'''The Flask application instance.'''
+app.url_map.strict_slashes = False
+
+
+@app.route('/states')
+@app.route('/states/<id>')
+def states(id=None):
+    '''The states page.'''
+    states = None
+    state = None
+    all_states = list(storage.all(State).values())
+    case = 404
+    if id is not None:
+        res = list(filter(lambda x: x.id == id, all_states))
+        if len(res) > 0:
+            state = res[0]
+            state.cities.sort(key=lambda x: x.name)
+            case = 2
+    else:
+        states = all_states
+        for state in states:
+            state.cities.sort(key=lambda x: x.name)
+        states.sort(key=lambda x: x.name)
+        case = 1
+    ctxt = {
+        'states': states,
+        'state': state,
+        'case': case
+    }
+    return render_template('9-states.html', **ctxt)
 
 
 @app.teardown_appcontext
-def refresh(exception):
-        models.storage.close()
+def flask_teardown(exc):
+    '''The Flask app/request context end event listener.'''
+    storage.close()
 
 
-@app.route("/states", strict_slashes=False)
-def route_states():
-        pep_fix = models.dummy_classes["State"]
-        data = models.storage.all(cls=pep_fix)
-        states = data.values()
-        return render_template('7-states_list.html', states_list=states)
-
-
-@app.route("/states/<id>", strict_slashes=False)
-def route_city():
-        pep_fix = models.dummy_classes["State"]
-        data = models.storage.all(cls=pep_fix)
-        states = data.values()
-        return render_template('8-cities_by_states.html', states_list=states)
-
-
-if __name__ == "__main__":
-        app.run()
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port='5000')

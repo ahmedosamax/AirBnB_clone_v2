@@ -1,51 +1,39 @@
 #!/usr/bin/python3
-"""
-    test reviews
-"""
-from models.base_model import BaseModel
+""" """
+import os
+
+from tests.test_models.test_base_model import TestBasemodel
 from models.review import Review
-from models.place import Place
-from models.user import User
-import unittest
 
 
-class test_Review(unittest.TestCase):
-    """
-        test for Review class
-    """
-    @classmethod
-    def setUpClass(cls):
-        """
-            setup
-        """
-        cls.dummy_review = Review()
-        cls.dummy_review.text = "test"
-        cls.dummy_review.user_id = User().id
-        cls.dummy_review.place_id = Place().id
+class TestReview(TestBasemodel):
+    """Represents the tests for the Review model."""
+    def __init__(self, *args, **kwargs):
+        """Initializes the test class."""
+        super().__init__(*args, **kwargs)
+        self.name = "Review"
+        self.value = Review
 
-    @classmethod
-    def tearDownClass(cls):
-        """
-            tear down
-        """
-        del cls.dummy_review
+    def test_place_id(self):
+        """Tests the type of place_id."""
+        new = self.value()
+        self.assertEqual(
+            type(new.place_id),
+            str if os.getenv('HBNB_TYPE_STORAGE') != 'db' else type(None)
+        )
 
-    def test_inheritance(self):
-        """
-            test proper inheritance
-        """
-        self.assertIsInstance(self.dummy_review, BaseModel)
-        self.assertTrue(hasattr(self.dummy_review, "id"))
-        self.assertTrue(hasattr(self.dummy_review, "created_at"))
-        self.assertTrue(hasattr(self.dummy_review, "updated_at"))
+    def test_user_id(self):
+        """Tests the type of user_id."""
+        new = self.value()
+        self.assertEqual(
+            type(new.user_id),
+            str if os.getenv('HBNB_TYPE_STORAGE') != 'db' else type(None)
+        )
 
-    def test_attrs(self):
-        """
-            test attributes
-        """
-        self.assertTrue(hasattr(self.dummy_review, "text"))
-        self.assertTrue(hasattr(self.dummy_review, "user_id"))
-        self.assertTrue(hasattr(self.dummy_review, "place_id"))
-
-if __name__ == "__main__":
-    unittest.main()
+    def test_text(self):
+        """Tests the type of text."""
+        new = self.value()
+        self.assertEqual(
+            type(new.text),
+            str if os.getenv('HBNB_TYPE_STORAGE') != 'db' else type(None)
+        )
